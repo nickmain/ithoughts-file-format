@@ -5,6 +5,6 @@ class Main {
     public static function main() {
         trace("Hello World!");
 
-        new Reader("test/iThoughtsFileFormat.itmz").read();
+        new Reader("test/Test.itmz").read();
     }
 }
