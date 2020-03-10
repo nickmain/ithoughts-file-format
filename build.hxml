@@ -4,5 +4,6 @@
 
 --each
 --interp
---next
--python "build/main.py"
+
+##--next
+##-python "build/main.py"
