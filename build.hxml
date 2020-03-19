@@ -1,6 +1,7 @@
 -cp src
 -cp test
 -main Main
+--macro nullSafety("ithoughts.model", Strict)
 
 --each
 --interp

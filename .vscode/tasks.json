@@ -12,7 +12,10 @@
                 "$haxe-error",
                 "$haxe-trace"
             ],
-            "group": "build"
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

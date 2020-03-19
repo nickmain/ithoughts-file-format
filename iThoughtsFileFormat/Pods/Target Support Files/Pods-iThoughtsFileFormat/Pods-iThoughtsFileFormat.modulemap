@@ -1,0 +1,6 @@
+module Pods_iThoughtsFileFormat {
+  umbrella header "Pods-iThoughtsFileFormat-umbrella.h"
+
+  export *
+  module * { export * }
+}
