@@ -76,6 +76,7 @@ class IThoughtsFile {
     }
 
     function makeXmlEntry(name: String, xml: Xml): Entry {
+        //TODO: fix xml.toString deficiency
         final xmlString = StringTools.replace(xml.toString(), "&amp;#10;", "&#10;");        
 
         final bytes = Bytes.ofString(xmlString);
