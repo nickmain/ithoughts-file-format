@@ -6,6 +6,7 @@ class Topic {
     public var text(get, set): String;
     public var color(get, set): Null<String>;
     public var shape(get, set): Null<Shape>;
+    public var note(get, set): Null<String>;
 
     public function new(element: Xml) {
         this.element = element;
@@ -36,6 +37,21 @@ class Topic {
         element.set("color", color);
         return color;
     }    
+
+    function get_note(): Null<String> {
+        return element.get("note");
+    }
+
+    function set_note(note: Null<String>) {
+        if(note == null) {
+            element.remove("note");
+            return note;
+        }
+
+        note = StringTools.replace(note, "\n", "&#10;");
+        element.set("note", note);
+        return note;
+    }   
 
     function get_shape(): Null<Shape> {
         return Shape.fromString(element.get("shape"));

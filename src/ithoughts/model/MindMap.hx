@@ -1,5 +1,8 @@
 package ithoughts.model;
 
+/**
+    The topic tree entry of the iThoughts file
+**/
 class MindMap {
     var document: Xml;
 
