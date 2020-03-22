@@ -1,8 +1,12 @@
 package ithoughts.model;
 
 class Topic {
+    public static final TextAlignLeft = 1;
+    public static final TextAlignRight = 2;
+    public static final TextAlignCenter = 3;
+
     final element: Xml;
-    
+
     public var parent(default, null): Null<Topic>;
     public var uuid(get, never): String;
     public var text(get, set): String;
@@ -16,6 +20,14 @@ class Topic {
     public var boundary(get, set): Bool;
     public var folded(get, set): Bool;
     public var resources(get, set): Array<String>;
+    public var taskStart(get, set): Null<Date>;
+    public var taskDue(get, set): Null<Date>;
+    public var textFont(get, set): Null<String>;
+    public var textSize(get, set): Null<Int>;
+    public var textAlignment(get, set): Null<Int>;
+    public var textColor(get, set): Null<String>;
+    public var taskProgress(get, set): Null<TaskProgress>;
+    public var taskCost(get, set): TaskCost;
 
     /**
      * Priority is zero for none, otherwise is clamped to 1 through 5
@@ -63,9 +75,77 @@ class Topic {
      * Set the modified date to now and return the string
      */
     public function modifyDate(): String {
-        final now = DateTools.format(Date.now(), "%Y-%m-%dT%H:%M:%S");
+        final now = dateString(Date.now());
         element.set("modified", now);
         return now;
+    }
+
+    function dateString(date: Date): String {
+        return DateTools.format(date, "%Y-%m-%dT%H:%M:%S");
+    }
+
+    function getDateProp(name: String): Null<Date> {
+        var s = element.get(name);
+        if(s == null) return null;
+        s = StringTools.replace(s, "T", " ");
+        return Date.fromString(s);
+    }
+
+    function setDateProp(name: String, date: Null<Date>) {
+        if(date == null) {
+            element.remove(name);
+            return null;
+        }
+
+        element.set(name, dateString(date));
+        return date;
+    }
+
+    function get_taskCost(): TaskCost {
+        final type = element.get("cost-type");
+        if(type == null) return notSet;
+        if(type == "2") return rolledUp;
+
+        final value = element.get("cost");
+        if(value == null) return notSet;
+        final costValue = Std.parseFloat(value);
+        if(costValue == null) return notSet;
+        return cost(costValue);
+    }
+
+    function set_taskCost(value: TaskCost): TaskCost {
+        switch value {
+            case notSet: {
+                element.remove("cost-type");
+                element.remove("cost");
+            }
+            case rolledUp: {
+                element.set("cost-type", "2");
+                element.remove("cost");
+            }
+            case cost(value): {
+                element.set("cost-type", "1");
+                element.set("cost", '$value');
+            }
+        }
+
+        return value;
+    }
+
+    function get_taskStart(): Null<Date> {
+        return getDateProp("task-start");
+    }
+
+    function set_taskStart(start: Null<Date>) {
+        return setDateProp("task-start", start);
+    }
+
+    function get_taskDue(): Null<Date> {
+        return getDateProp("task-due");
+    }
+
+    function set_taskDue(due: Null<Date>) {
+        return setDateProp("task-due", due);
     }
 
     function get_type(): TopicType {
@@ -172,18 +252,77 @@ class Topic {
         return position;
     }
 
+    function getIntProp(name: String): Null<Int> {
+        final value = element.get(name);
+        if(value == null) return null;
+        return Std.parseInt(value);
+    }
+
+    function setIntProp(name: String, value: Null<Int>) {
+        if(value == null) {
+            element.remove(name);
+            return null;
+        }
+
+        element.set(name, '$value');
+        return value;
+    }
+
+    function get_textAlignment(): Null<Int> {
+        return getIntProp("text-alignment");
+    }
+
+    function set_textAlignment(alignment: Null<Int>) {
+        if(alignment != null && (alignment < 1 || alignment > 3)) {
+            alignment = null;
+        }
+        return setIntProp("text-alignment", alignment);
+    } 
+
+    function get_textSize(): Null<Int> {
+        return getIntProp("text-size");
+    }
+
+    function set_textSize(size: Null<Int>) {
+        return setIntProp("text-size", size);
+    } 
+
+    function getStringProp(name: String): Null<String> {
+        return element.get(name);
+    }
+
+    function setStringProp(name: String, value: Null<String>) {
+        if(value == null) {
+            element.remove(name);
+            return null;
+        }
+
+        element.set(name, value);
+        return value;
+    } 
+
+    function get_textFont(): Null<String> {
+        return getStringProp("text-font");
+    }
+
+    function set_textFont(font: Null<String>) {
+        return setStringProp("text-font", font);
+    }    
+
     function get_color(): Null<String> {
-        return element.get("color");
+        return getStringProp("color");
     }
 
     function set_color(color: Null<String>) {
-        if(color == null) {
-            element.remove("color");
-            return color;
-        }
+        return setStringProp("color", color);
+    }    
 
-        element.set("color", color);
-        return color;
+    function get_textColor(): Null<String> {
+        return getStringProp("text-color");
+    }
+
+    function set_textColor(color: Null<String>) {
+        return setStringProp("text-color", color);
     }    
 
     function get_note(): Null<String> {
@@ -193,7 +332,7 @@ class Topic {
     function set_note(note: Null<String>) {
         if(note == null) {
             element.remove("note");
-            return note;
+            return null;
         }
 
         note = StringTools.replace(note, "\n", "&#10;");
@@ -201,19 +340,27 @@ class Topic {
         return note;
     }   
 
+    function get_taskProgress(): Null<TaskProgress> {
+        return TaskProgress.fromString(element.get("task-progress"));
+    }
+
+    function set_taskProgress(progress: Null<TaskProgress>) {
+        if(progress == null) {
+            element.remove("task-progress");
+            return null;
+        }
+
+        element.set("task-progress", '$progress');
+        return progress;
+    }  
+
     function get_link(): Null<String> {
-        return element.get("link");
+        return getStringProp("link");
     }
 
     // link should be html escaped before being passed in
     function set_link(link: Null<String>) {
-        if(link == null) {
-            element.remove("link");
-            return link;
-        }
-
-        element.set("link", link);
-        return link;
+        return setStringProp("link", link);
     } 
 
     function get_resources() {
