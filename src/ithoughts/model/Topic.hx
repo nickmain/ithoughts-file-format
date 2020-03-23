@@ -1,14 +1,11 @@
 package ithoughts.model;
 
-class Topic {
+class Topic extends Element {
     public static final TextAlignLeft = 1;
     public static final TextAlignRight = 2;
     public static final TextAlignCenter = 3;
 
-    final element: Xml;
-
     public var parent(default, null): Null<Topic>;
-    public var uuid(get, never): String;
     public var text(get, set): String;
     public var position(get, set): {x: Float, y: Float};
     public var color(get, set): Null<String>;
@@ -28,6 +25,8 @@ class Topic {
     public var textColor(get, set): Null<String>;
     public var taskProgress(get, set): Null<TaskProgress>;
     public var taskCost(get, set): TaskCost;
+    public var taskEffort(get, set): TaskEffort;
+    public var icons(get, set): Array<String>;
 
     /**
      * Priority is zero for none, otherwise is clamped to 1 through 5
@@ -35,7 +34,7 @@ class Topic {
     public var taskPriority(get, set): Int;
 
     public function new(element: Xml, parent: Null<Topic> = null) {
-        this.element = element;
+        super(element);
         this.parent = parent;
     }
 
@@ -179,12 +178,6 @@ class Topic {
         return children;
     }
 
-    function get_uuid() {
-        final uuid = element.get("uuid");
-        if(uuid == null) return "";
-        return uuid;
-    }
-
     function get_text() {
         final text = element.get("text");
         if(text == null) return "";
@@ -285,20 +278,6 @@ class Topic {
 
     function set_textSize(size: Null<Int>) {
         return setIntProp("text-size", size);
-    } 
-
-    function getStringProp(name: String): Null<String> {
-        return element.get(name);
-    }
-
-    function setStringProp(name: String, value: Null<String>) {
-        if(value == null) {
-            element.remove(name);
-            return null;
-        }
-
-        element.set(name, value);
-        return value;
     } 
 
     function get_textFont(): Null<String> {
@@ -414,4 +393,51 @@ class Topic {
         element.set("shape", Std.string(shape));
         return shape;
     } 
+
+    function get_taskEffort(): TaskEffort {
+        return TaskEffortUnit.from(element.get("task-effort"));
+    }
+
+    function set_taskEffort(e: TaskEffort): TaskEffort {
+        switch e {
+            case none: element.remove("task-effort");
+            case rollUp(unit): element.set("task-effort", '-1.00$unit');
+            case effort(value, unit): element.set("task-effort", '$value$unit');
+        }
+
+        return e;
+    }
+
+    function get_icons() {
+        final icons = new Array<String>();
+        var i = 1;
+        while(true) {
+            var iconName = element.get('icon$i');
+            if(iconName == null) break;
+            icons.push(iconName);
+            i++;
+        }
+
+        return icons;
+    }
+
+    function set_icons(icons: Array<String>) {
+        var i = 1;
+        while(true) {
+            if(element.exists('icon$i')) {
+                element.remove('icon$i');
+                i++;
+                continue;
+            } 
+            break;
+        }
+
+        i = 1;
+        for(icon in icons) {
+            element.set('icon$i', icon);
+            i++;
+        }
+
+        return icons;
+    }
 }

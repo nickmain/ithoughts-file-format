@@ -1,3 +1,4 @@
+import ithoughts.model.IconNames;
 import ithoughts.model.Topic;
 import vendored.Uuid;
 import ithoughts.model.IThoughtsFile;
@@ -25,6 +26,8 @@ See the String API documentation for all string methods.
 ";
         var hello: Null<Topic> = null;
         var child: Null<Topic> = null;
+        var also: Null<Topic> = null;
+        var floating: Null<Topic> = null;
 
         trace(root.taskStart);
         trace(root.taskDue);
@@ -34,19 +37,22 @@ See the String API documentation for all string methods.
             trace('${c.uuid} -- ${c.type} --> "${c.text}" : $pos');
 
             if(c.text == "Also Floating") {
+                also = c;
                 c.taskStart = Date.now();
                 c.textFont = root.textFont;
                 c.textSize = root.textSize;
                 c.textColor = "3333FF";                
+                trace(c.taskEffort);
             }
 
             if(c.text == "Floating") {
+                floating = c;
                 c.text = "Callout";
                 c.type = callout;
                 c.taskCost = rolledUp;
 
-                final a = c.newChild(-150, -30);
-                final b = c.newChild(-150, 30);
+                final a = c.newChild(-200, -40);
+                final b = c.newChild(-200, 40);
                 final aa = a.newChild(-100, 0);
                 a.text = "A";
                 b.text = "B";
@@ -56,6 +62,11 @@ See the String API documentation for all string methods.
                 aa.taskPriority = 4;
                 a.taskCost = root.taskCost;
                 b.taskCost = cost(3);
+                a.taskEffort = effort(45, minutes);
+                b.taskEffort = effort(4.5, hours);
+                c.taskEffort = rollUp(days);
+
+                a.icons = [IconNames.icon_heart, IconNames.arrow_down_blue];
             }
 
             if(c.text == "Child") child = c;
@@ -68,11 +79,22 @@ See the String API documentation for all string methods.
 
         if(child != null && hello != null) {
             child.moveTo(hello);
-            child.position = {x: 100, y: 50};
+            child.position = {x: 150, y: 50};
             child.resources = ["foo", "bar"];
             child.folded = true;
             child.taskProgress = rollUp;
             hello.taskProgress = notStarted;
+            child.taskEffort = rollUp(minutes);
+            hello.position = {x: 150, y: 0};
+        }
+
+        if(also != null && floating != null) {
+            floating.icons = also.icons;
+        }
+
+        for(rel in map.relationships) {
+            trace('relationship ${rel.uuid} from ${rel.startUuid} to ${rel.endUuid}');
+            rel.color = "FFFF88";
         }
 
         file.writeTo("/Users/nickmain/Desktop/test-out.itmz");
