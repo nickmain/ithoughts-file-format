@@ -23,6 +23,13 @@ class Relationship extends Element {
         super(element);
     }
 
+    /**
+     * Remove this relationship.
+     */
+    public function remove() {
+         element.parent.removeChild(element);
+    }
+
     function get_offset() {
         return getPosition("b-offset");
     }

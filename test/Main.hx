@@ -28,6 +28,7 @@ See the String API documentation for all string methods.
         var child: Null<Topic> = null;
         var also: Null<Topic> = null;
         var floating: Null<Topic> = null;
+        var empty: Null<Topic> = null;
 
         trace(root.taskStart);
         trace(root.taskDue);
@@ -35,6 +36,8 @@ See the String API documentation for all string methods.
         for(c in root.children) {
             final pos = c.position;
             trace('${c.uuid} -- ${c.type} --> "${c.text}" : $pos');
+
+            if(c.text == "") empty = c;
 
             if(c.text == "Also Floating") {
                 also = c;
@@ -77,6 +80,12 @@ See the String API documentation for all string methods.
             }
         }
 
+        if(child != null && empty != null) {
+            final rel = map.addRelationship(empty, child);
+            rel.type = straight;
+            rel.centerText = "New\nRelation";
+        }
+
         if(child != null && hello != null) {
             child.moveTo(hello);
             child.position = {x: 150, y: 50};
@@ -95,12 +104,15 @@ See the String API documentation for all string methods.
         for(rel in map.relationships) {
             trace('relationship ${rel.uuid} from ${rel.startUuid} to ${rel.endUuid}');
             trace('  ${rel.type.asString()} ${rel.startArrow.asString()}: ${rel.startText} -- ${rel.centerText} --> ${rel.endText} ${rel.endArrow.asString()}');
+
+            if(rel.startText == null) continue;
             rel.color = "FFFF88";
             rel.dashed = !rel.dashed;
             rel.centerText = "Foo\nBar";
             rel.type = angled;
             rel.startArrow = ball;
             rel.offset = {x: -250, y: -120};
+            
         }
 
         file.writeTo("/Users/nickmain/Desktop/test-out.itmz");
