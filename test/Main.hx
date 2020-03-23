@@ -94,7 +94,13 @@ See the String API documentation for all string methods.
 
         for(rel in map.relationships) {
             trace('relationship ${rel.uuid} from ${rel.startUuid} to ${rel.endUuid}');
+            trace('  ${rel.type.asString()} ${rel.startArrow.asString()}: ${rel.startText} -- ${rel.centerText} --> ${rel.endText} ${rel.endArrow.asString()}');
             rel.color = "FFFF88";
+            rel.dashed = !rel.dashed;
+            rel.centerText = "Foo\nBar";
+            rel.type = angled;
+            rel.startArrow = ball;
+            rel.offset = {x: -250, y: -120};
         }
 
         file.writeTo("/Users/nickmain/Desktop/test-out.itmz");

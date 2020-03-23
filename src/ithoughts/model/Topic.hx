@@ -79,27 +79,6 @@ class Topic extends Element {
         return now;
     }
 
-    function dateString(date: Date): String {
-        return DateTools.format(date, "%Y-%m-%dT%H:%M:%S");
-    }
-
-    function getDateProp(name: String): Null<Date> {
-        var s = element.get(name);
-        if(s == null) return null;
-        s = StringTools.replace(s, "T", " ");
-        return Date.fromString(s);
-    }
-
-    function setDateProp(name: String, date: Null<Date>) {
-        if(date == null) {
-            element.remove(name);
-            return null;
-        }
-
-        element.set(name, dateString(date));
-        return date;
-    }
-
     function get_taskCost(): TaskCost {
         final type = element.get("cost-type");
         if(type == null) return notSet;
@@ -190,21 +169,6 @@ class Topic extends Element {
         return text;
     }
 
-    function getBoolProp(name: String) {
-        final value = element.get(name);
-        if(value == null) return false;
-        return value == "1";
-    }
-
-    function setBoolProp(name: String, value: Bool) {
-        if(value) {    
-            element.set(name, "1");
-        } else {
-            element.remove(name);
-        }
-        return value;
-    }
-
     function get_boundary() {
         return getBoolProp("boundary");
     }
@@ -222,43 +186,11 @@ class Topic extends Element {
     }
 
     function get_position() {
-        var position = element.get("position");
-        if(position == null) return {x: 0.0, y: 0.0};
-
-        // reduce string to two comma-separated floats
-        position = StringTools.replace(position, "{", "");
-        position = StringTools.replace(position, "}", "");
-        position = StringTools.replace(position, " ", "");
-        
-        var values = position.split(",");
-        if(values.length != 2) return {x: 0.0, y: 0.0};
-        final x = Std.parseFloat(values[0]);
-        final y = Std.parseFloat(values[1]);
-
-        if(x == null || y == null) return {x: 0.0, y: 0.0};
-
-        return return {x: x, y: y};
+        return getPosition("position");
     }
 
     function set_position(position: {x: Float, y: Float}) {
-        element.set("position", '{${position.x}, ${position.y}}');
-        return position;
-    }
-
-    function getIntProp(name: String): Null<Int> {
-        final value = element.get(name);
-        if(value == null) return null;
-        return Std.parseInt(value);
-    }
-
-    function setIntProp(name: String, value: Null<Int>) {
-        if(value == null) {
-            element.remove(name);
-            return null;
-        }
-
-        element.set(name, '$value');
-        return value;
+        return setPosition("position", position);
     }
 
     function get_textAlignment(): Null<Int> {
@@ -305,18 +237,11 @@ class Topic extends Element {
     }    
 
     function get_note(): Null<String> {
-        return element.get("note");
+        return getNullableString("note");
     }
 
     function set_note(note: Null<String>) {
-        if(note == null) {
-            element.remove("note");
-            return null;
-        }
-
-        note = StringTools.replace(note, "\n", "&#10;");
-        element.set("note", note);
-        return note;
+        return setNullableString("note", note);
     }   
 
     function get_taskProgress(): Null<TaskProgress> {
