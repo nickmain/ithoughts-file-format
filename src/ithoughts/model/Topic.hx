@@ -27,6 +27,9 @@ class Topic extends Element {
     public var taskCost(get, set): TaskCost;
     public var taskEffort(get, set): TaskEffort;
     public var icons(get, set): Array<String>;
+    public var imageWidth(get, set): Null<Float>;
+    public var attachmentId(get, set): Null<String>;
+    public var attachmentName(get, set): Null<String>;    
 
     /**
      * Priority is zero for none, otherwise is clamped to 1 through 5
@@ -77,6 +80,30 @@ class Topic extends Element {
         final now = dateString(Date.now());
         element.set("modified", now);
         return now;
+    }
+
+    function get_attachmentId() {
+        return getNullableString("att-id");
+    }
+
+    function set_attachmentId(value: Null<String>) {
+        return setNullableString("att-id", value);
+    }
+
+    function get_attachmentName() {
+        return getNullableString("att-name");
+    }
+
+    function set_attachmentName(value: Null<String>) {
+        return setNullableString("att-name", value);
+    }
+
+    function get_imageWidth() {
+        return getNullableFloat("image-width");
+    }
+
+    function set_imageWidth(value: Null<Float>) {
+        return setNullableFloat("image-width", value);
     }
 
     function get_taskCost(): TaskCost {

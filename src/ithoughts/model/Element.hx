@@ -81,6 +81,22 @@ class Element {
         return DateTools.format(date, "%Y-%m-%dT%H:%M:%S");
     }
 
+    function getNullableFloat(name: String): Null<Float> {
+        final s = element.get(name);
+        if(s == null) return null;
+        return Std.parseFloat(s);
+    }
+
+    function setNullableFloat(name: String, value: Null<Float>) {
+        if(value == null) {
+            element.remove(name);
+            return null;
+        }
+
+        element.set(name, '$value');
+        return value;
+    } 
+
     function getNullableString(name: String): Null<String> {
         return element.get(name);
     }
