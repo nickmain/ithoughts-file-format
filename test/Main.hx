@@ -1,6 +1,5 @@
 import ithoughts.model.IconNames;
 import ithoughts.model.Topic;
-import vendored.Uuid;
 import ithoughts.model.IThoughtsFile;
 
 class Main {

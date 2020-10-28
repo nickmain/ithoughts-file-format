@@ -4,7 +4,7 @@
 --macro nullSafety("ithoughts.model", Strict)
 
 --each
---interp
+##--interp
 
 ##--next
-##-python "build/main.py"
+-python "build/main.py"
