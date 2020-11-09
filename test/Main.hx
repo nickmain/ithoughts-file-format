@@ -114,6 +114,17 @@ See the String API documentation for all string methods.
             
         }
 
+        final c1 = empty.newChild(150, -40);
+        final c2 = empty.newChild(150, 0);
+        final c3 = empty.newChild(150, 40);
+        c1.text = "One"; c1.color = "FF0000";
+        c2.text = "Two"; c2.color = "00FF00";
+        c3.text = "Three"; c3.color = "0000FF";
+        final c4 = empty.newChild(200, 0);
+        c4.text = "Four"; c4.color = "FFFF00";
+        c4.summary1 = c1.uuid;
+        c4.summary2 = c2.uuid;
+
         file.writeTo("/Users/nickmain/Desktop/test-out.itmz");
     }
 }

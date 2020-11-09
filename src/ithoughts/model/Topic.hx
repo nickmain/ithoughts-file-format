@@ -31,6 +31,11 @@ class Topic extends Element {
     public var attachmentId(get, set): Null<String>;
     public var attachmentName(get, set): Null<String>;    
 
+    // Only if topic is a summary for siblings
+    // Must follow non-summary topics
+    public var summary1(get, set): Null<String>;  //id of first summarized topic
+    public var summary2(get, set): Null<String>;  //id of last summarized topic
+
     /**
      * Priority is zero for none, otherwise is clamped to 1 through 5
      */
@@ -284,6 +289,22 @@ class Topic extends Element {
         element.set("task-progress", '$progress');
         return progress;
     }  
+
+    function get_summary1(): Null<String> {
+        return getStringProp("summary1");
+    }
+
+    function set_summary1(id: Null<String>) {
+        return setStringProp("summary1", id);
+    } 
+
+    function get_summary2(): Null<String> {
+        return getStringProp("summary2");
+    }
+
+    function set_summary2(id: Null<String>) {
+        return setStringProp("summary2", id);
+    } 
 
     function get_link(): Null<String> {
         return getStringProp("link");
