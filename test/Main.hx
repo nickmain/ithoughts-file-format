@@ -1,3 +1,5 @@
+import haxe.rtti.CType.ClassField;
+import haxe.ds.StringMap;
 import ithoughts.model.IconNames;
 import ithoughts.model.Topic;
 import ithoughts.model.IThoughtsFile;
@@ -110,8 +112,26 @@ See the String API documentation for all string methods.
             rel.centerText = "Foo\nBar";
             rel.type = angled;
             rel.startArrow = ball;
-            rel.offset = {x: -250, y: -120};
-            
+            rel.offset = {x: -250, y: -120};            
+        }
+
+        var groupTopics = new StringMap<String>();
+        for(group in map.groups) {            
+            group.type = switch group.type {
+                case boundary: rectangle;
+                case rectangle: circle;
+                case circle: oval;
+                case oval: boundary;
+            }
+
+            for(uuid in group.memberUuids) groupTopics.set(uuid, uuid);
+        }
+        for(uuid in groupTopics.keys()) {
+            var topic = map.topics.get(uuid);
+            if(topic != null) {
+                final pos = topic.position;
+                topic.position = {x: pos.x, y: pos.y -100};
+            }
         }
 
         final c1 = empty.newChild(150, -40);

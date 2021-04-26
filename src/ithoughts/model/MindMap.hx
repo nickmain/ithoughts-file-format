@@ -1,5 +1,7 @@
 package ithoughts.model;
 
+import haxe.ds.StringMap;
+
 /**
     The map data entry of the iThoughts file
 **/
@@ -8,9 +10,62 @@ class MindMap {
 
     public var rootTopic(get, never): Null<Topic>;
     public var relationships(get, never): Array<Relationship>;
+    public var groups(get, never): Array<Group>; //rear-most to front-most
+
+    // Lazy map of initial topics by uuid. Not updated when new topics are added.
+    public var topics(get, never): StringMap<Topic>;
+    private var topicMap: Null<StringMap<Topic>>;
 
     public function new(document: Xml) {
         this.document = document;
+    }
+
+    function get_topics(): StringMap<Topic> {
+        if(topicMap != null) return topicMap;
+        final map = new StringMap<Topic>();
+        topicMap = map;
+        addTopicToMap(map, rootTopic);
+        return map;
+    }
+
+    // recursive mapping of topics
+    function addTopicToMap(map: StringMap<Topic>, topic: Null<Topic>) {
+        if(topic == null) return;
+        map.set(topic.uuid, topic);
+        for(child in topic.children) addTopicToMap(map, child);
+    }
+
+    public function removeAllGroups() {
+        final root = document.firstElement();
+        final groups = root.elementsNamed("groups");
+        if(groups.hasNext()) {
+            root.removeChild(groups.next());
+        }
+    }
+
+    public function addGroup(topics: Array<Topic>): Group {
+        final root = document.firstElement();
+        final groups = root.elementsNamed("groups");
+
+        var container = if(groups.hasNext()) {
+            groups.next();
+        } else {
+            final newElem = Xml.createElement("groups");
+            root.addChild(newElem);
+            final dummyGroup = Xml.createElement("group");
+            newElem.addChild(dummyGroup);
+            dummyGroup.set("type", "-1");
+            newElem;
+        }
+
+        final newElem = Xml.createElement("group");
+        final group = new Group(newElem);
+        container.addChild(newElem);
+
+        group.type = boundary;
+        group.color = "FFFF00";
+        for(topic in topics) group.addMemberUuid(topic.uuid);
+        return group;
     }
 
     public function addRelationship(fromTopic: Topic, toTopic: Topic): Relationship {
@@ -46,7 +101,7 @@ class MindMap {
         return null;
     }
 
-    function get_relationships() {
+    function get_relationships(): Array<Relationship> {
         final relationships = new Array<Relationship>();
         final root = document.firstElement();
 
@@ -57,5 +112,20 @@ class MindMap {
         }
 
         return relationships;
+    }
+
+    function get_groups(): Array<Group> {
+        final groups = new Array<Group>();
+        final root = document.firstElement();
+
+        for(gg in root.elementsNamed("groups")) {
+            for(g in gg.elementsNamed("group")) {
+                var group = new Group(g);
+                if(group.color == null) continue;
+                groups.push(group);
+            }            
+        }
+
+        return groups;
     }
 }

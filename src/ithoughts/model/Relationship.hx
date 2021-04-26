@@ -2,6 +2,7 @@ package ithoughts.model;
 
 class Relationship extends Element {
 
+    public var uuid(get, never): String;
     public var startUuid(get, never): String;
     public var endUuid(get, never): String;
     public var color(get, set): Null<String>;
@@ -29,6 +30,12 @@ class Relationship extends Element {
     public function remove() {
          element.parent.removeChild(element);
     }
+
+    function get_uuid() {
+        final uuid = element.get("uuid");
+        if(uuid == null) return "";
+        return uuid;
+    }   
 
     function get_offset() {
         return getPosition("b-offset");
@@ -115,5 +122,54 @@ class Relationship extends Element {
 
     function set_dashed(dashed: Bool) {
         return setBoolProp("dashed", dashed);
+    }
+}
+
+enum abstract RelationshipType(Int) {
+    var curved = 0;
+    var straight = 1;
+    var angled = 2;
+    var summary = 3;
+
+    static final cases = [curved, straight, angled, summary];
+    public static function fromString(s: Null<String>): RelationshipType {
+        if(s == null) return curved;
+        final i = Std.parseInt(s);
+        if(i == null) return curved;
+
+        if(i >= 0 && i < cases.length) {
+            return cases[i];
+        }
+
+        return curved;
+    }
+
+    static final names = ["curved", "straight", "angled", "summary"];
+    public function asString() {
+        return names[this];
+    }
+}
+
+enum abstract ArrowType(Int) {
+    var none = 0;
+    var arrow = 1;
+    var ball = 2;
+
+    static final cases = [none, arrow, ball];
+    public static function fromString(s: Null<String>): ArrowType {
+        if(s == null) return none;
+        final i = Std.parseInt(s);
+        if(i == null) return none;
+
+        if(i >= 0 && i < cases.length) {
+            return cases[i];
+        }
+
+        return none;
+    }
+
+    static final names = ["none", "arrow", "ball"];
+    public function asString() {
+        return names[this];
     }
 }

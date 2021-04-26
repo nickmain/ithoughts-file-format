@@ -1,10 +1,17 @@
 package ithoughts.model;
 
+enum TopicType {
+    topic;
+    callout;
+    floating;
+}
+
 class Topic extends Element {
     public static final TextAlignLeft = 1;
     public static final TextAlignRight = 2;
     public static final TextAlignCenter = 3;
 
+    public var uuid(get, never): String;
     public var parent(default, null): Null<Topic>;
     public var text(get, set): String;
     public var position(get, set): {x: Float, y: Float};
@@ -23,9 +30,9 @@ class Topic extends Element {
     public var textSize(get, set): Null<Int>;
     public var textAlignment(get, set): Null<Int>;
     public var textColor(get, set): Null<String>;
-    public var taskProgress(get, set): Null<TaskProgress>;
-    public var taskCost(get, set): TaskCost;
-    public var taskEffort(get, set): TaskEffort;
+    public var taskProgress(get, set): Null<Task.Progress>;
+    public var taskCost(get, set): Task.Cost;
+    public var taskEffort(get, set): Task.Effort;
     public var icons(get, set): Array<String>;
     public var imageWidth(get, set): Null<Float>;
     public var attachmentId(get, set): Null<String>;
@@ -87,6 +94,12 @@ class Topic extends Element {
         return now;
     }
 
+    function get_uuid() {
+        final uuid = element.get("uuid");
+        if(uuid == null) return "";
+        return uuid;
+    }    
+
     function get_attachmentId() {
         return getNullableString("att-id");
     }
@@ -111,7 +124,7 @@ class Topic extends Element {
         return setNullableFloat("image-width", value);
     }
 
-    function get_taskCost(): TaskCost {
+    function get_taskCost(): Task.Cost {
         final type = element.get("cost-type");
         if(type == null) return notSet;
         if(type == "2") return rolledUp;
@@ -123,7 +136,7 @@ class Topic extends Element {
         return cost(costValue);
     }
 
-    function set_taskCost(value: TaskCost): TaskCost {
+    function set_taskCost(value: Task.Cost): Task.Cost {
         switch value {
             case notSet: {
                 element.remove("cost-type");
@@ -276,11 +289,11 @@ class Topic extends Element {
         return setNullableString("note", note);
     }   
 
-    function get_taskProgress(): Null<TaskProgress> {
-        return TaskProgress.fromString(element.get("task-progress"));
+    function get_taskProgress(): Null<Task.Progress> {
+        return Task.Progress.fromString(element.get("task-progress"));
     }
 
-    function set_taskProgress(progress: Null<TaskProgress>) {
+    function set_taskProgress(progress: Null<Task.Progress>) {
         if(progress == null) {
             element.remove("task-progress");
             return null;
@@ -367,11 +380,11 @@ class Topic extends Element {
         return shape;
     } 
 
-    function get_taskEffort(): TaskEffort {
-        return TaskEffortUnit.from(element.get("task-effort"));
+    function get_taskEffort(): Task.Effort {
+        return Task.EffortUnit.from(element.get("task-effort"));
     }
 
-    function set_taskEffort(e: TaskEffort): TaskEffort {
+    function set_taskEffort(e: Task.Effort): Task.Effort {
         switch e {
             case none: element.remove("task-effort");
             case rollUp(unit): element.set("task-effort", '-1.00$unit');
